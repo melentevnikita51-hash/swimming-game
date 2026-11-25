@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>50 м вольный стиль · Мировой финал</title>
+<style>
+/* ══════════════════════════════════════════════════════════
+   1. ПЕРЕМЕННЫЕ И БАЗА
+   ══════════════════════════════════════════════════════════ */
+:root{
+  --bg-0:#030a12;
+  --panel:rgba(8,24,40,.72);
+  --line:rgba(120,190,255,.14);
+  --line-hi:rgba(120,190,255,.32);
+  --text:#ddebfa;
+  --muted:#6d97ba;
+  --accent:#37b6ff;
+  --accent-2:#8ee6ff;
+  --gold:#f6c945;
+  --silver:#c9d5e6;
+  --bronze:#cf8b4f;
+  --green:#6fe79a;
+  --mono:"JetBrains Mono","SF Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 620px at 50% -12%, #0d3152 0%, transparent 62%),
+    radial-gradient(900px 520px at 92% 108%, #07203a 0%, transparent 60%),
+    var(--bg-0);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:22px 16px 46px;
+  -webkit-font-smoothing:antialiased;
+}
+.app{width:100%;max-width:1160px;display:flex;flex-direction:column;gap:14px}
+
+/* ══════════════════════════════════════════════════════════
+   2. ШАПКА
+   ══════════════════════════════════════════════════════════ */
+.masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.eyebrow{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px}
+h1{font-size:clamp(22px,3.6vw,34px);font-weight:900;line-height:1.04;letter-spacing:-.015em}
+h1 em{font-style:normal;color:var(--accent)}
+.wr-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold);
+  border:1px solid rgba(246,201,69,.32);background:rgba(246,201,69,.07);
+  border-radius:999px;padding:5px 13px;
+}
+.wr-badge b{font-size:9px;letter-spacing:.16em;color:rgba(246,201,69,.75);font-weight:800}
+
+/* ══════════════════════════════════════════════════════════
+   3. СЕТКА
+   ══════════════════════════════════════════════════════════ */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+.board{display:flex;flex-direction:column;gap:10px;min-width:0}
+@media (max-width:940px){ .layout{grid-template-columns:1fr} }
+
+/* ══════════════════════════════════════════════════════════
+   4. СЧЁТНОЕ ТАБЛО
+   ══════════════════════════════════════════════════════════ */
+.scorebar{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(180deg,rgba(11,33,54,.92),rgba(7,22,38,.92));
+  border:1px solid var(--line);border-radius:12px;padding:9px 14px;
+}
+.status{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pace{
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);
+  border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap;
+  transition:color .2s,border-color .2s;
+}
+.pace.ahead{color:var(--green);border-color:rgba(111,231,154,.35)}
+.clock{
+  font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:.02em;
+  color:var(--accent-2);font-variant-numeric:tabular-nums;
+  min-width:96px;text-align:right;transition:color .2s;
+}
+.clock.go{color:var(--green)}
+
+/* ══════════════════════════════════════════════════════════
+   5. БАССЕЙН
+   ══════════════════════════════════════════════════════════ */
+.pool{
+  position:relative;overflow:hidden;border-radius:16px;
+  border:1px solid rgba(55,182,255,.24);
+  background:linear-gradient(180deg,#0d5b96 0%,#0a4677 42%,#052a49 100%);
+  box-shadow:0 26px 70px rgba(0,0,0,.65),inset 0 0 110px rgba(0,90,170,.45);
+}
+/* каустика на воде */
+.pool::before{
+  content:"";position:absolute;inset:-15%;pointer-events:none;opacity:.55;
+  mix-blend-mode:screen;
+  background:
+    radial-gradient(ellipse 70px 20px at 20% 30%, rgba(255,255,255,.40), transparent 70%),
+    radial-gradient(ellipse 90px 24px at 65% 62%, rgba(255,255,255,.28), transparent 70%),
+    radial-gradient(ellipse 60px 18px at 42% 82%, rgba(255,255,255,.22), transparent 70%);
+  background-size:260px 150px,340px 200px,220px 130px;
+  animation:caustics 16s linear infinite;
+}
+@keyframes caustics{
+  0%  {background-position:0 0, 140px 70px, 60px 100px}
+  100%{background-position:260px 150px, -200px 270px, 280px -30px}
+}
+/* тёмная глубина снизу */
+.pool::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,10,20,.35) 100%);
+}
+
+/* ── дорожки ── */
+.lanes{position:relative;z-index:2;padding:6px 0}
+.lane{
+  position:relative;height:46px;display:flex;align-items:center;
+  border-bottom:1px solid rgba(140,210,255,.09);
+  transition:background .25s;
+}
+.lane:last-child{border-bottom:0}
+.lane::after{
+  content:"";position:absolute;left:0;right:0;top:50%;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 8%,rgba(180,230,255,.10) 30%,rgba(180,230,255,.10) 70%,transparent 92%);
+}
+.lane.lead{background:linear-gradient(90deg,rgba(246,201,69,.13),rgba(246,201,69,0) 55%)}
+
+.lane-no{
+  position:absolute;left:8px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:9.5px;font-weight:700;
+  color:rgba(160,215,255,.32);z-index:6;
+}
+.lane-rank{
+  position:absolute;left:24px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10px;font-weight:800;
+  color:var(--muted);z-index:6;
+}
+.lane-tag{
+  position:absolute;right:50px;top:50%;transform:translateY(-50%);
+  font-size:9.5px;letter-spacing:.09em;font-weight:700;
+  color:rgba(190,225,255,.26);z-index:6;white-space:nowrap;
+}
+.lane-time{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  color:var(--accent-2);opacity:0;transition:opacity .25s;z-index:6;
+}
+.lane-time.show{opacity:.95}
+
+/* ── стартовая тумба ── */
+.start-block{
+  position:absolute;left:9%;top:4px;width:30px;height:8px;
+  transform:translateX(-50%);border-radius:2px;z-index:1;
+  background:linear-gradient(180deg,#a8bccd,#63788b);
+  box-shadow:0 2px 0 rgba(16,36,54,.8),0 4px 10px rgba(0,0,0,.4);
+}
+.start-block::before{
+  content:"";position:absolute;left:50%;top:-3px;width:12px;height:3px;
+  transform:translateX(-50%);border-radius:1px;background:#cfe0ee;
+}
+.start-block::after{
+  content:"";position:absolute;left:-7px;top:5px;width:7px;height:2px;
+  background:rgba(200,225,245,.5);
+}
+
+/* ── финишный створ ── */
+.rope{
+  position:absolute;right:9%;top:0;bottom:0;width:5px;z-index:3;border-radius:2px;
+  background:repeating-linear-gradient(180deg,#fff 0 6px,#e33 6px 12px);
+  opacity:.5;
+}
+
+/* ── пловец ── */
+.swimmer{
+  position:absolute;top:50%;left:9%;width:64px;height:38px;z-index:4;
+  transform:translate(-50%,-50%);will-change:left,transform;pointer-events:none;
+}
+.swimmer .fig{width:100%;height:100%;transform-origin:50% 60%;will-change:transform}
+.swimmer svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 6px rgba(0,0,0,.55))}
+.swimmer.done{opacity:.5;filter:saturate(.65)}
+
+/* ── fx-слой и вспышка ── */
+.pool-fx{position:absolute;inset:0;z-index:5;pointer-events:none}
+.pool-flash{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:clamp(52px,11vw,96px);font-weight:800;letter-spacing:.04em;
+  color:rgba(255,255,255,.94);text-shadow:0 0 46px rgba(120,220,255,.85);
+  opacity:0;transform:scale(.9);pointer-events:none;z-index:7;
+  transition:opacity .18s ease,transform .3s ease;
+}
+.pool-flash.show{opacity:1;transform:scale(1)}
+.pool-flash.go{color:#a8ffc4;text-shadow:0 0 54px rgba(110,255,160,.9)}
+
+/* ══════════════════════════════════════════════════════════
+   6. КНОПКИ
+   ══════════════════════════════════════════════════════════ */
+.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.btn{
+  font:inherit;font-size:13px;font-weight:800;letter-spacing:.06em;
+  border:none;border-radius:9px;padding:11px 24px;cursor:pointer;
+  transition:transform .12s,box-shadow .12s,filter .12s,background .12s;
+}
+.btn-primary{background:linear-gradient(180deg,#5cc8ff,#1f9fe0);color:#04121e;box-shadow:0 8px 22px rgba(56,182,255,.32)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 28px rgba(56,182,255,.42)}
+.btn-ghost{background:rgba(255,255,255,.06);color:#a8c8e2;border:1px solid rgba(143,227,255,.16);padding:11px 16px}
+.btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.12)}
+.btn:disabled{filter:grayscale(.7) brightness(.65);cursor:not-allowed}
+.hint{font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+
+/* ══════════════════════════════════════════════════════════
+   7. ПАНЕЛЬ УЧАСТНИКОВ
+   ══════════════════════════════════════════════════════════ */
+.roster{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px;min-width:0}
+.roster-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.roster h2{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.roster .cnt{font-family:var(--mono);font-size:9.5px;color:rgba(120,190,255,.45)}
+.cards{display:grid;grid-template-columns:1fr;gap:5px}
+.card{
+  display:grid;grid-template-columns:18px 38px minmax(0,1fr) auto;gap:8px;align-items:center;
+  padding:5px 8px;border:1px solid rgba(120,190,255,.10);border-radius:10px;
+  background:rgba(255,255,255,.03);
+  transition:border-color .25s,background .25s,transform .25s;
+}
+.card.lead{
+  border-color:rgba(246,201,69,.5);
+  background:linear-gradient(90deg,rgba(246,201,69,.13),rgba(246,201,69,.02));
+  transform:translateX(-2px);
+}
+.card .chip{
+  font-family:var(--mono);font-size:10px;font-weight:800;text-align:center;
+  color:var(--accent-2);
+}
+.card.lead .chip{color:var(--gold)}
+.ava svg{width:38px;height:38px;display:block;border-radius:50%}
+.meta{min-width:0}
+.nm{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct{font-size:9.5px;color:var(--muted);letter-spacing:.03em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.delta{font-family:var(--mono);font-size:10px;color:var(--accent-2);white-space:nowrap;text-align:right}
+@media (max-width:940px){ .cards{grid-template-columns:1fr 1fr} }
+@media (max-width:460px){ .cards{grid-template-columns:1fr} }
+
+/* ══════════════════════════════════════════════════════════
+   8. ПРОТОКОЛ
+   ══════════════════════════════════════════════════════════ */
+.results{
+  width:100%;padding:16px 18px;background:rgba(7,26,44,.85);
+  border:1px solid var(--line);border-radius:14px;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .35s ease,transform .35s ease;
+}
+.results.show{opacity:1;transform:none;pointer-events:auto}
+.results h2{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:12px;font-weight:800}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;text-align:right;padding:4px 7px;white-space:nowrap}
+td{padding:6px 7px;text-align:right;font-variant-numeric:tabular-nums;border-top:1px solid rgba(143,227,255,.08)}
+th.l,td.l{text-align:left}
+tr.p1 td{background:rgba(246,201,69,.10)}
+tr.p2 td{background:rgba(200,211,227,.06)}
+tr.p3 td{background:rgba(207,139,79,.07)}
+.t{font-family:var(--mono);font-weight:700;color:var(--accent-2)}
+.m{font-family:var(--mono);color:var(--muted);font-size:12px}
+.diff{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.badge{font-size:9px;font-weight:800;border-radius:4px;padding:1px 4px;margin-left:5px;vertical-align:1px}
+.badge.wr{color:var(--gold);background:rgba(246,201,69,.16)}
+.badge.pb{color:var(--green);background:rgba(111,231,154,.14)}
+@media (max-width:760px){
+  .splits{display:none}
+  .lane{height:38px}
+  .swimmer{width:50px;height:30px}
+  .clock{font-size:21px;min-width:76px}
+  .pace,.hint{display:none}
+  .lane-tag{display:none}
+}
+
+/* ══════════════════════════════════════════════════════════
+   9. КОНФЕТТИ И ФУТЕР
+   ══════════════════════════════════════════════════════════ */
+.confetti{position:fixed;inset:0;z-index:90;pointer-events:none}
+footer{text-align:center;font-size:10.5px;color:rgba(109,151,186,.65);letter-spacing:.04em}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Мировой финал · 8 сильнейших</div>
+      <h1>50 м <em>вольный стиль</em></h1>
+    </div>
+    <div class="wr-badge"><b>МК</b> 20.91</div>
+  </header>
+
+  <main class="layout">
+    <section class="board">
+      <div class="scorebar">
+        <span class="status" id="status">Готовы к старту</span>
+        <span class="pace" id="pace">МР 20.91</span>
+        <span class="clock" id="clock" aria-live="off">0.00</span>
+      </div>
+
+      <div class="pool" id="pool">
+        <div class="rope" aria-hidden="true"></div>
+        <div class="lanes" id="lanes"></div>
+        <canvas class="pool-fx" id="poolFx" aria-hidden="true"></canvas>
+        <div class="pool-flash" id="poolFlash" aria-hidden="true"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="start">СТАРТ</button>
+        <button class="btn btn-ghost" id="reset">СБРОС</button>
+        <button class="btn btn-ghost" id="sound" aria-pressed="true" title="Звук (M)">🔊</button>
+        <span class="hint">Пробел — старт · R — сброс · M — звук</span>
+      </div>
+    </section>
+
+    <aside class="roster">
+      <div class="roster-head">
+        <h2>Топ-8 мира</h2>
+        <span class="cnt">LIVE</span>
+      </div>
+      <div class="cards" id="cards"></div>
+    </aside>
+  </main>
+
+  <section class="results" id="results" aria-live="polite">
+    <h2 id="resTitle">Итоговый протокол</h2>
+    <div id="table"></div>
+  </section>
+
+  <footer>Симуляция · личные рекорды приближены к реальным · 8 дорожек</footer>
+</div>
+
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+<noscript>Для запуска игры включите JavaScript.</noscript>
+
+<script>
+(() => {
+'use strict';
+
+/* ══════════════════════════════════════════════════════════
+   1. КОНФИГУРАЦИЯ
+   ══════════════════════════════════════════════════════════ */
+const CFG = {
+  DIST:       50,     // дистанция, м
+  WR:         20.91,  // мировой рекорд, с
+  WR_REACT:   0.61,   // реакция автора МР
+  PLAYBACK:   1.85,   // ускорение показа (1 = реальные секунды)
+  COUNTDOWN:  780,    // пауза между сигналами старта, мс
+  LANE_LEFT:  9,      // старт, % ширины дорожки
+  LANE_RIGHT: 88,     // финиш, % ширины дорожки
+  DIVE:       0.60    // длительность прыжка в «соревновательных» секундах
+};
+
+// порядок жеребьёвки: 1-й сеет 4-ю дорожку, 2-й — 5-ю и т.д.
+const LANE_ORDER = [4, 5, 3, 6, 2, 7, 1, 8];
+
+// Топ-8 спринтеров на 50 м вольным стилем (ПР условные, близкие к реальным)
+const ROSTER = [
+  { name:'К. Дрессел',   flag:'🇺🇸', c:'USA', pb:21.04, color:'#4dabf7' },
+  { name:'К. МакЭвой',   flag:'🇦🇺', c:'AUS', pb:21.06, color:'#ffd166' },
+  { name:'Б. Прауд',     flag:'🇬🇧', c:'GBR', pb:21.11, color:'#ff8787' },
+  { name:'Ф. Манаду',    flag:'🇫🇷', c:'FRA', pb:21.19, color:'#63e6be' },
+  { name:'Дж. Лиендо',   flag:'🇨🇦', c:'CAN', pb:21.26, color:'#f783ac' },
+  { name:'К. Гкомолеев', flag:'🇬🇷', c:'GRE', pb:21.44, color:'#a9e34b' },
+  { name:'Дж. Крукс',    flag:'🇰🇾', c:'CAY', pb:21.51, color:'#b197fc' },
+  { name:'С. Сабо',      flag:'🇭🇺', c:'HUN', pb:21.86, color:'#ffa94d' }
+];
+
+/* ══════════════════════════════════════════════════════════
+   2. DOM
+   ══════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const poolEl    = $('pool');
+const lanesEl   = $('lanes');
+const cardsEl   = $('cards');
+const clockEl   = $('clock');
+const statusEl  = $('status');
+const paceEl    = $('pace');
+const startBtn  = $('start');
+const resetBtn  = $('reset');
+const soundBtn  = $('sound');
+const resultsEl = $('results');
+const tableEl   = $('table');
+const titleEl   = $('resTitle');
+const flashEl   = $('poolFlash');
+const fxCanvas  = $('poolFx');
+const fxCtx     = fxCanvas.getContext('2d');
+const confettiEl= $('confetti');
+const confettiCtx = confettiEl.getContext('2d');
+
+/* ══════════════════════════════════════════════════════════
+   3. МАТЕМАТИКА ТЕМПА
+   Скорость спринтера: v(u) = (1 - e^(-u/a)) · (1 - b·u^p)
+   Интеграл нормируется к 1 — значение = доля дистанции.
+   ══════════════════════════════════════════════════════════ */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+function buildCurve(a, b, p, N = 180) {
+  const vel = u => (1 - Math.exp(-u / a)) * (1 - b * Math.pow(u, p));
+  const cum = new Float64Array(N + 1);
+  for (let i = 1; i <= N; i++) {
+    const x0 = (i - 1) / N, x1 = i / N;
+    cum[i] = cum[i - 1] + (vel(x0) + vel(x1)) / 2 / N;
+  }
+  const total = cum[N];
+  for (let i = 0; i <= N; i++) cum[i] /= total;
+  return cum;
+}
+
+function curveAt(c, u) {
+  if (u <= 0) return 0;
+  if (u >= 1) return 1;
+  const N = c.length - 1, x = u * N, i = x | 0, f = x - i;
+  return c[i] + (c[i + 1] - c[i]) * f;
+}
+
+function fracToTime(c, frac) {
+  if (frac <= 0) return 0;
+  if (frac >= 1) return 1;
+  const N = c.length - 1;
+  let lo = 0, hi = N;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (c[mid] < frac) lo = mid + 1; else hi = mid;
+  }
+  const i = Math.max(1, lo);
+  const A = c[i - 1], B = c[i];
+  const f = B === A ? 0 : (frac - A) / (B - A);
+  return (i - 1 + f) / N;
+}
+
+const WR_CURVE = buildCurve(0.072, 0.105, 1.75);
+
+/* ══════════════════════════════════════════════════════════
+   4. SVG: ПЛОВЕЦ И ПОРТРЕТ
+   ══════════════════════════════════════════════════════════ */
+function swimmerSVG(color) {
+  return `<svg viewBox="0 0 68 40" preserveAspectRatio="xMidYMid meet"
+               aria-hidden="true" focusable="false">
+    <ellipse cx="9" cy="25" rx="15" ry="4" fill="#fff" opacity=".09"/>
+    <g class="a-back">
+      <line x1="41" y1="21" x2="27" y2="21" stroke="${color}"
+            stroke-width="3" stroke-linecap="round" opacity=".55"/>
+    </g>
+    <g class="leg-a"><line x1="18" y1="18" x2="5" y2="18" stroke="${color}"
+            stroke-width="3" stroke-linecap="round"/></g>
+    <g class="leg-b"><line x1="18" y1="22" x2="5" y2="22" stroke="${color}"
+            stroke-width="3" stroke-linecap="round"/></g>
+    <rect x="16" y="15" width="34" height="10" rx="5" fill="${color}"/>
+    <circle cx="55" cy="20" r="6.4" fill="${color}"/>
+    <path d="M49.2 15.4 Q55.6 10.2 62.2 16.6 Q58.6 12.6 49.2 15.4 Z"
+          fill="#fff" opacity=".5"/>
+    <ellipse cx="57.4" cy="18.4" rx="2.7" ry="1.9" fill="#08131f"
+             stroke="#8ee6ff" stroke-width=".7"/>
+    <circle cx="58.1" cy="17.8" r=".7" fill="#8ee6ff" opacity=".85"/>
+    <g class="a-front">
+      <line x1="45" y1="19" x2="61" y2="19" stroke="${color}"
+            stroke-width="3.4" stroke-linecap="round"/>
+    </g>
+  </svg>`;
+}
+
+function portraitSVG(color, idx) {
+  const skin = '#e9bb90';
+  return `<svg viewBox="0 0 72 72" aria-hidden="true" focusable="false">
+    <defs><linearGradient id="pg${idx}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${color}" stop-opacity=".55"/>
+      <stop offset="1" stop-color="${color}" stop-opacity=".10"/>
+    </linearGradient></defs>
+    <circle cx="36" cy="36" r="34" fill="url(#pg${idx})"/>
+    <path d="M8 70 Q13 47 36 47 Q59 47 64 70 Z" fill="${color}"/>
+    <rect x="30" y="39" width="12" height="12" rx="5" fill="${skin}"/>
+    <ellipse cx="36" cy="31" rx="13.5" ry="15.5" fill="${skin}"/>
+    <path d="M22.5 28 Q22.5 14 36 14 Q49.5 14 49.5 28 Q48.5 22 36 21 Q23.5 22 22.5 28 Z"
+          fill="${color}"/>
+    <rect x="24.5" y="27" width="10" height="7" rx="3.2" fill="#0b1620"
+          stroke="#8fe3ff" stroke-width="1.2"/>
+    <rect x="37.5" y="27" width="10" height="7" rx="3.2" fill="#0b1620"
+          stroke="#8fe3ff" stroke-width="1.2"/>
+    <rect x="34" y="29" width="4" height="2" rx="1" fill="#8fe3ff"/>
+    <path d="M32 40.5 Q36 43 40 40.5" fill="none" stroke="rgba(120,70,50,.65)"
+          stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`;
+}
+
+/* позы конечностей */
+function poseBlock(fig) {
+  fig.armF.setAttribute('transform', 'rotate(-38 45 19)');
+  fig.armB.setAttribute('transform', 'rotate(-32 41 21)');
+  fig.legA.setAttribute('transform', 'rotate(10 18 18)');
+  fig.legB.setAttribute('transform', 'rotate(-9 18 22)');
+}
+function poseDive(fig) {
+  fig.armF.setAttribute('transform', 'rotate(4 45 19)');
+  fig.armB.setAttribute('transform', 'rotate(2 41 21)');
+  fig.legA.setAttribute('transform', 'rotate(-2 18 18)');
+  fig.legB.setAttribute('transform', 'rotate(2 18 22)');
+}
+function poseFinish(fig) {
+  fig.armF.setAttribute('transform', 'rotate(-6 45 19)');
+  fig.armB.setAttribute('transform', 'rotate(-4 41 21)');
+  fig.legA.setAttribute('transform', 'rotate(6 18 18)');
+  fig.legB.setAttribute('transform', 'rotate(-4 18 22)');
+}
+function animateFigure(fig, phase) {
+  const a = Math.sin(phase * Math.PI * 2);
+  const b = Math.sin(phase * Math.PI * 2 + Math.PI);
+  fig.armF.setAttribute('transform', `rotate(${(a * 30).toFixed(1)} 45 19)`);
+  fig.armB.setAttribute('transform', `rotate(${(b * 26).toFixed(1)} 41 21)`);
+  fig.legA.setAttribute('transform', `rotate(${(b * 16).toFixed(1)} 18 18)`);
+  fig.legB.setAttribute('transform', `rotate(${(a * 16).toFixed(1)} 18 22)`);
+}
+
+/* ══════════════════════════════════════════════════════════
+   5. СОСТОЯНИЕ
+   ══════════════════════════════════════════════════════════ */
+const state = {
+  lanes: [],
+  entries: [],
+  cards: new Map(),
+  running: false,
+  counting: false,
+  t0: 0,
+  raf: 0,
+  timers: [],
+  flashTimer: 0,
+  wrCurve: WR_CURVE
+};
+
+/* ══════════════════════════════════════════════════════════
+   6. ПОСТРОЕНИЕ ДОРОЖЕК И КАРТОЧЕК
+   ══════════════════════════════════════════════════════════ */
+function buildLanes() {
+  lanesEl.innerHTML = '';
+
+  const seeded = ROSTER
+    .slice()
+    .sort((a, b) => a.pb - b.pb)
+    .map((s, i) => ({ ...s, lane: LANE_ORDER[i] }))
+    .sort((a, b) => a.lane - b.lane);
+
+  state.lanes = seeded.map(seed => {
+    const laneEl = document.createElement('div');
+    laneEl.className = 'lane';
+    laneEl.innerHTML = `
+      <span class="lane-no">${seed.lane}</span>
+      <span class="lane-rank"></span>
+      <div class="start-block" aria-hidden="true"></div>
+      <span class="lane-tag">${seed.flag} ${seed.c}</span>
+      <div class="swimmer"><div class="fig">${swimmerSVG(seed.color)}</div></div>
+      <span class="lane-time"></span>`;
+    lanesEl.appendChild(laneEl);
+
+    const wrap  = laneEl.querySelector('.swimmer');
+    const figEl = wrap.querySelector('.fig');
+
+    return {
+      seed, el: laneEl, wrap, figEl,
+      rankEl: laneEl.querySelector('.lane-rank'),
+      timeEl: laneEl.querySelector('.lane-time'),
+      fig: {
+        armF: wrap.querySelector('.a-front'),
+        armB: wrap.querySelector('.a-back'),
+        legA: wrap.querySelector('.leg-a'),
+        legB: wrap.querySelector('.leg-b')
+      }
+    };
+  });
+}
+
+function buildCards() {
+  cardsEl.innerHTML = '';
+  state.cards.clear();
+
+  ROSTER.forEach((s, i) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <span class="chip">–</span>
+      <div class="ava">${portraitSVG(s.color, i)}</div>
+      <div class="meta">
+        <div class="nm">${s.flag} ${s.name}</div>
+        <div class="ct">${s.c} · PB ${s.pb.toFixed(2)}</div>
+      </div>
+      <div class="delta"></div>`;
+    cardsEl.appendChild(card);
+
+    state.cards.set(s.name, {
+      el: card,
+      chip: card.querySelector('.chip'),
+      delta: card.querySelector('.delta')
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   7. ЗВУК
+   ══════════════════════════════════════════════════════════ */
+let audioCtx = null;
+let muted = false;
+
+function beep(freq, dur, type, gain) {
+  if (muted) return;
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    if (!audioCtx) audioCtx = new Ctx();
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const t = audioCtx.currentTime;
+    g.gain.setValueAtTime(gain || 0.06, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g);
+    g.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+  } catch (e) { /* звук не критичен */ }
+}
+
+/* ══════════════════════════════════════════════════════════
+   8. ЧАСТИЦЫ НА ВОДЕ
+   ══════════════════════════════════════════════════════════ */
+const fx = { w: 0, h: 0, parts: [], ripples: [], raf: 0, running: false };
+
+function fxResize() {
+  const r = poolEl.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  fx.w = r.width;
+  fx.h = r.height;
+  fxCanvas.width  = Math.max(1, Math.round(r.width  * dpr));
+  fxCanvas.height = Math.max(1, Math.round(r.height * dpr));
+  fxCanvas.style.width  = r.width  + 'px';
+  fxCanvas.style.height = r.height + 'px';
+  fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function lanePoint(e) {
+  // координаты центра пловца в пикселях относительно пула
+  const x = e.el.offsetLeft + e.el.offsetWidth * (e.xPct || CFG.LANE_LEFT) / 100;
+  const y = e.el.offsetTop + e.el.offsetHeight / 2 + 6;
+  return { x, y };
+}
+
+function spawnSplash(x, y, n, power) {
+  for (let i = 0; i < n; i++) {
+    const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
+    const sp = (0.7 + Math.random() * 1.7) * power;
+    fx.parts.push({
+      x, y,
+      vx: Math.cos(ang) * sp * 2.3,
+      vy: Math.sin(ang) * sp * 2.7,
+      r: 0.8 + Math.random() * 2.2,
+      life: 1,
+      decay: 0.012 + Math.random() * 0.014,
+      c: Math.random() < 0.5 ? '#e6f7ff' : '#9fd8ff'
+    });
+  }
+  fx.ripples.push({ x, y, r: 2, max: 22 + Math.random() * 18, life: 1 });
+  kickFx();
+}
+
+function kickFx() {
+  if (fx.running) return;
+  fx.running = true;
+  fx.raf = requestAnimationFrame(fxStep);
+}
+
+function fxStep() {
+  fxCtx.clearRect(0, 0, fx.w, fx.h);
+
+  // круги на воде
+  for (let i = fx.ripples.length - 1; i >= 0; i--) {
+    const r = fx.ripples[i];
+    r.r += (r.max - r.r) * 0.07;
+    r.life -= 0.02;
+    if (r.life <= 0) { fx.ripples.splice(i, 1); continue; }
+    fxCtx.beginPath();
+    fxCtx.ellipse(r.x, r.y, r.r, r.r * 0.32, 0, 0, Math.PI * 2);
+    fxCtx.strokeStyle = `rgba(190,235,255,${(r.life * 0.30).toFixed(3)})`;
+    fxCtx.lineWidth = 1.2;
+    fxCtx.stroke();
+  }
+
+  // брызги
+  for (let i = fx.parts.length - 1; i >= 0; i--) {
+    const p = fx.parts[i];
+    p.vy += 0.22;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+    if (p.life <= 0 || p.y > fx.h + 10) { fx.parts.splice(i, 1); continue; }
+    fxCtx.globalAlpha = Math.min(1, p.life);
+    fxCtx.fillStyle = p.c;
+    fxCtx.beginPath();
+    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    fxCtx.fill();
+  }
+  fxCtx.globalAlpha = 1;
+
+  if (fx.parts.length || fx.ripples.length) {
+    fx.raf = requestAnimationFrame(fxStep);
+  } else {
+    fx.running = false;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   9. ГЕНЕРАЦИЯ ЗАПЛЫВА
+   ══════════════════════════════════════════════════════════ */
+function makeEntry(lane) {
+  const s = lane.seed;
+
+  // 12% заплывов — «идеальные», почти повторение личного рекорда
+  const perfect = Math.random() < 0.12;
+  const penalty = perfect ? Math.random() * 0.04 : 0.06 + Math.random() * 0.30;
+  const luck = ((Math.random() + Math.random() + Math.random()) / 3 - 0.5) * 0.16;
+  const time = Math.max(CFG.WR - 0.10, s.pb + penalty + luck);
+
+  const reaction = 0.55 + Math.random() * 0.20;
+  const curve = buildCurve(
+    0.055 + Math.random() * 0.040,   // резкость разгона
+    0.070 + Math.random() * 0.100,   // сила затухания
+    1.45  + Math.random() * 0.700    // форма усталости
+  );
+
+  return {
+    ...lane,
+    time, reaction, curve,
+    dist: 0, xPct: CFG.LANE_LEFT,
+    done: false, place: 0,
+    phase: Math.random(),
+    splashed: false
+  };
+}
+
+/* ══════════════════════════════════════════════════════════
+   10. СБРОС СЦЕНЫ
+   ══════════════════════════════════════════════════════════ */
+function clearTimers() {
+  state.timers.forEach(clearTimeout);
+  state.timers = [];
+}
+
+function resetScene() {
+  for (const l of state.lanes) {
+    l.wrap.style.left = CFG.LANE_LEFT + '%';
+    l.wrap.style.transform = 'translate(-50%, calc(-50% - 16px))';
+    l.figEl.style.transform = 'rotate(0deg)';
+    l.wrap.classList.remove('done');
+    l.timeEl.textContent = '';
+    l.timeEl.classList.remove('show');
+    l.rankEl.textContent = '';
+    l.el.classList.remove('lead');
+    poseBlock(l.fig);
+  }
+  for (const c of state.cards.values()) {
+    c.chip.textContent = '–';
+    c.delta.textContent = '';
+    c.el.classList.remove('lead');
+  }
+  paceEl.textContent = 'МР ' + CFG.WR.toFixed(2);
+  paceEl.classList.remove('ahead');
+}
+
+function flash(text, kind) {
+  flashEl.textContent = text;
+  flashEl.className = 'pool-flash show' + (kind === 'go' ? ' go' : '');
+  clearTimeout(state.flashTimer);
+  state.flashTimer = setTimeout(() => {
+    flashEl.classList.remove('show');
+  }, kind === 'go' ? 560 : 420);
+}
+
+/* ══════════════════════════════════════════════════════════
+   11. СТАРТ
+   ══════════════════════════════════════════════════════════ */
+function startRace() {
+  if (state.running || state.counting) return;
+
+  clearTimers();
+  cancelAnimationFrame(state.raf);
+  stopConfetti();
+
+  resultsEl.classList.remove('show');
+  tableEl.innerHTML = '';
+  titleEl.textContent = 'Итоговый протокол';
+  resetScene();
+  fxResize();
+
+  startBtn.disabled = true;
+  startBtn.textContent = 'ЗАПЛЫВ…';
+  statusEl.textContent = 'На старте';
+  clockEl.classList.remove('go');
+
+  state.entries = state.lanes.map(makeEntry);
+  state.counting = true;
+  countdown(3);
+}
+
+function countdown(n) {
+  if (n > 0) {
+    clockEl.textContent = String(n);
+    statusEl.textContent = 'На старте';
+    flash(String(n), 'num');
+    beep(470, 0.10, 'sine', 0.05);
+    state.timers.push(setTimeout(() => countdown(n - 1), CFG.COUNTDOWN));
+  } else {
+    clockEl.textContent = 'GO';
+    clockEl.classList.add('go');
+    statusEl.textContent = 'Заплыв идёт';
+    flash('GO', 'go');
+    beep(900, 0.20, 'sine', 0.07);
+    begin();
+  }
+}
+
+function begin() {
+  state.counting = false;
+  state.running = true;
+  state.t0 = performance.now();
+  clockEl.textContent = '0.00';
+  clockEl.classList.remove('go');
+  state.raf = requestAnimationFrame(loop);
+}
+
+/* ══════════════════════════════════════════════════════════
+   12. ИГРОВОЙ ЦИКЛ
+   ══════════════════════════════════════════════════════════ */
+function loop(now) {
+  if (!state.running) return;
+
+  const rt = ((now - state.t0) / 1000) * CFG.PLAYBACK;
+  let maxT = 0;
+
+  for (const e of state.entries) {
+    if (e.time > maxT) maxT = e.time;
+
+    const T = e.time, R = e.reaction;
+    const u = clamp((rt - R) / (T - R), 0, 1);
+    e.dist = CFG.DIST * curveAt(e.curve, u);
+    e.xPct = CFG.LANE_LEFT + (e.dist / CFG.DIST) * (CFG.LANE_RIGHT - CFG.LANE_LEFT);
+
+    let y = 0, rot = 0;
+    if (rt < R) {
+      y = -16;
+      poseBlock(e.fig);
+    } else {
+      const k = clamp((rt - R) / CFG.DIVE, 0, 1);
+      y = -16 * (1 - k) - 7 * Math.sin(Math.PI * k);
+      rot = 14 * Math.sin(Math.PI * k);
+
+      if (k < 1) {
+        poseDive(e.fig);
+      } else if (u < 1) {
+        e.phase = (e.phase + 0.075) % 1;
+        animateFigure(e.fig, e.phase);
+      } else {
+        poseFinish(e.fig);
+      }
+
+      if (k >= 1 && !e.splashed) {
+        e.splashed = true;
+        const p = lanePoint(e);
+        spawnSplash(p.x, p.y, 16, 1.0);
+      }
+    }
+
+    e.wrap.style.left = e.xPct.toFixed(2) + '%';
+    e.wrap.style.transform =
+      `translate(-50%, calc(-50% + ${y.toFixed(1)}px))`;
+    e.figEl.style.transform = `rotate(${rot.toFixed(1)}deg)`;
+
+    if (u >= 1 && !e.done) {
+      e.done = true;
+      e.wrap.classList.add('done');
+      e.timeEl.textContent = e.time.toFixed(2);
+      e.timeEl.classList.add('show');
+      const p = lanePoint(e);
+      spawnSplash(p.x, p.y, 10, 0.75);
+      beep(720, 0.05, 'triangle', 0.04);
+    }
+  }
+
+  /* живые места */
+  const order = state.entries.slice().sort((a, b) => {
+    if (a.done !== b.done) return a.done ? -1 : 1;
+    if (a.done) return a.time - b.time;
+    return b.dist - a.dist;
+  });
+  const lead = order[0];
+
+  order.forEach((e, i) => {
+    const p = i + 1;
+    if (e.place !== p) {
+      e.place = p;
+      e.rankEl.textContent = p;
+      const c = state.cards.get(e.seed.name);
+      if (c) c.chip.textContent = p;
+    }
+    e.el.classList.toggle('lead', p === 1);
+    const c = state.cards.get(e.seed.name);
+    if (c) c.el.classList.toggle('lead', p === 1);
+  });
+
+  /* отставание в метрах на карточках */
+  for (const e of state.entries) {
+    const c = state.cards.get(e.seed.name);
+    if (!c) continue;
+    if (e.done) {
+      c.delta.textContent = e.time.toFixed(2);
+    } else if (lead && lead !== e && lead.dist > 0.02) {
+      c.delta.textContent = '−' + (lead.dist - e.dist).toFixed(1) + ' м';
+    } else {
+      c.delta.textContent = '';
+    }
+  }
+
+  /* такт мирового рекорда */
+  if (rt < CFG.WR) {
+    const wrU = clamp((rt - CFG.WR_REACT) / (CFG.WR - CFG.WR_REACT), 0, 1);
+    const wrDist = CFG.DIST * curveAt(WR_CURVE, wrU);
+    const gap = lead.dist - wrDist;
+    paceEl.textContent = (gap >= 0 ? '+' : '−') + Math.abs(gap).toFixed(1) + ' м к МР';
+    paceEl.classList.toggle('ahead', gap >= 0);
+  } else {
+    paceEl.textContent = 'темп МР пройден';
+    paceEl.classList.remove('ahead');
+  }
+
+  clockEl.textContent = rt.toFixed(2);
+
+  if (rt > maxT + 0.9) { finishRace(); return; }
+  state.raf = requestAnimationFrame(loop);
+}
+
+/* ══════════════════════════════════════════════════════════
+   13. ФИНИШ И ПРОТОКОЛ
+   ══════════════════════════════════════════════════════════ */
+function finishRace() {
+  cancelAnimationFrame(state.raf);
+  state.running = false;
+  startBtn.disabled = false;
+  startBtn.textContent = 'ЕЩЁ РАЗ';
+  statusEl.textContent = 'Финиш';
+  clockEl.classList.remove('go');
+
+  const sorted = state.entries.slice().sort((a, b) => a.time - b.time);
+  clockEl.textContent = sorted[0].time.toFixed(2);
+
+  const photo = sorted.length > 1 && (sorted[1].time - sorted[0].time) < 0.01;
+  titleEl.textContent = photo
+    ? 'Итоговый протокол · фотофиниш'
+    : 'Итоговый протокол';
+
+  buildResults(sorted);
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  beep(880, 0.16, 'sine', 0.06);
+  state.timers.push(setTimeout(() => beep(1320, 0.26, 'sine', 0.06), 150));
+
+  if (sorted[0].time <= CFG.WR) {
+    state.timers.push(setTimeout(startConfetti, 320));
+  }
+}
+
+function buildResults(sorted) {
+  const winner = sorted[0].time;
+  const medals = ['🥇', '🥈', '🥉'];
+
+  const splitTime = (e, metres) =>
+    e.reaction + (e.time - e.reaction) * fracToTime(e.curve, metres / CFG.DIST);
+
+  const rows = sorted.map((e, i) => {
+    const place = i + 1;
+    const cls = place <= 3 ? 'p' + place : '';
+    const diff = place === 1 ? '—' : '+' + (e.time - winner).toFixed(2);
+
+    let badges = '';
+    if (e.time <= CFG.WR + 1e-9) badges += '<span class="badge wr">МР</span>';
+    if (e.time < e.seed.pb)      badges += '<span class="badge pb">PB</span>';
+
+    return `<tr class="${cls}">
+      <td class="l">${medals[i] || ''} ${place}</td>
+      <td class="l">${e.seed.flag} ${e.seed.name}
+        <span class="diff">${e.seed.c}</span>${badges}</td>
+      <td class="m">${e.reaction.toFixed(2)}</td>
+      <td class="splits m">${splitTime(e, 15).toFixed(2)}</td>
+      <td class="splits m">${splitTime(e, 25).toFixed(2)}</td>
+      <td class="splits m">${splitTime(e, 35).toFixed(2)}</td>
+      <td class="t">${e.time.toFixed(2)}</td>
+      <td class="diff">${diff}</td>
+    </tr>`;
+  }).join('');
+
+  tableEl.innerHTML = `<table>
+    <thead><tr>
+      <th class="l">Место</th>
+      <th class="l">Пловец</th>
+      <th>Реакция</th>
+      <th class="splits">15 м</th>
+      <th class="splits">25 м</th>
+      <th class="splits">35 м</th>
+      <th>50 м</th>
+      <th>Δ</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   14. КОНФЕТТИ
+   ══════════════════════════════════════════════════════════ */
+let confetti = [];
+let confettiRaf = 0;
+
+function startConfetti() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  confettiEl.width  = window.innerWidth  * dpr;
+  confettiEl.height = window.innerHeight * dpr;
+  confettiEl.style.width  = window.innerWidth  + 'px';
+  confettiEl.style.height = window.innerHeight + 'px';
+  confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const palette = ['#f6c945', '#37b6ff', '#6fe79a', '#ffffff', '#ff8787'];
+  confetti = [];
+  for (let i = 0; i < 160; i++) {
+    confetti.push({
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+      y: window.innerHeight * 0.30,
+      vx: (Math.random() - 0.5) * 9,
+      vy: -6 - Math.random() * 9,
+      w: 3 + Math.random() * 5,
+      h: 2 + Math.random() * 3,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.34,
+      c: palette[(Math.random() * palette.length) | 0]
+    });
+  }
+  cancelAnimationFrame(confettiRaf);
+  confettiRaf = requestAnimationFrame(confettiStep);
+}
+
+function confettiStep() {
+  confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  let alive = false;
+
+  for (const p of confetti) {
+    p.vy += 0.26;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rot += p.vr;
+    if (p.y > window.innerHeight + 40) continue;
+    alive = true;
+    confettiCtx.save();
+    confettiCtx.translate(p.x, p.y);
+    confettiCtx.rotate(p.rot);
+    confettiCtx.globalAlpha = 0.92;
+    confettiCtx.fillStyle = p.c;
+    confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    confettiCtx.restore();
+  }
+
+  if (alive) confettiRaf = requestAnimationFrame(confettiStep);
+  else stopConfetti();
+}
+
+function stopConfetti() {
+  cancelAnimationFrame(confettiRaf);
+  confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  confetti = [];
+}
+
+/* ══════════════════════════════════════════════════════════
+   15. СБРОС
+   ══════════════════════════════════════════════════════════ */
+function reset() {
+  clearTimers();
+  cancelAnimationFrame(state.raf);
+  stopConfetti();
+
+  state.running = false;
+  state.counting = false;
+  state.entries = [];
+
+  startBtn.disabled = false;
+  startBtn.textContent = 'СТАРТ';
+  statusEl.textContent = 'Готовы к старту';
+  clockEl.textContent = '0.00';
+  clockEl.classList.remove('go');
+
+  flashEl.classList.remove('show');
+  resultsEl.classList.remove('show');
+  tableEl.innerHTML = '';
+  titleEl.textContent = 'Итоговый протокол';
+  resetScene();
+
+  fxCtx.clearRect(0, 0, fx.w, fx.h);
+  fx.parts = [];
+  fx.ripples = [];
+}
+
+/* ══════════════════════════════════════════════════════════
+   16. СОБЫТИЯ
+   ══════════════════════════════════════════════════════════ */
+startBtn.addEventListener('click', startRace);
+resetBtn.addEventListener('click', reset);
+
+soundBtn.addEventListener('click', () => {
+  muted = !muted;
+  soundBtn.textContent = muted ? '🔇' : '🔊';
+  soundBtn.setAttribute('aria-pressed', String(!muted));
+});
+
+document.addEventListener('keydown', ev => {
+  if (ev.code === 'Space' || ev.code === 'Enter') {
+    ev.preventDefault();
+    if (!state.running && !state.counting) startRace();
+  } else if (ev.code === 'KeyR') {
+    reset();
+  } else if (ev.code === 'KeyM') {
+    soundBtn.click();
+  }
+});
+
+window.addEventListener('resize', () => {
+  fxResize();
+  if (confetti.length) {
+    confettiEl.width  = window.innerWidth;
+    confettiEl.height = window.innerHeight;
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   17. ИНИЦИАЛИЗАЦИЯ
+   ══════════════════════════════════════════════════════════ */
+buildLanes();
+buildCards();
+resetScene();
+requestAnimationFrame(() => {
+  fxResize();
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(fxResize).observe(poolEl);
+  }
+});
+
+})();
+</script>
+</body>
+</html>
